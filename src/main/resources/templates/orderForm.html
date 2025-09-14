@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head><title>Taco Cloud</title>
+    <link rel="stylesheet" th:href="@{/styles.css}"/>
+</head>
+<body>
+<form method="post" th:action="@{/orders}" th:object="${tacoOrder}">
+    <h1>Order your taco creations!</h1>
+        <img alt="Taco Cloud" th:src="@{/images/taco-cloud-image.png}"/>
+            <h3>Your tacos in this order:</h3>
+                <a id="another" th:href="@{/design}">Design another taco</a><br/>
+    <ul>
+        <li th:each="taco : ${tacos}">
+            <span th:text="${taco.name}">taco name</span>
+        </li>
+    </ul>
+    <h3>Deliver my taco masterpieces to...</h3>
+       <label>Name: </label>
+           <input th:field="*{deliveryName}" type="text"/>
+        <br/>
+        <label>Street address: </label>
+            <input th:field="*{deliveryStreet}" type="text"/>
+        <br/>
+        <label>City: </label>
+            <input th:field="*{deliveryCity}" type="text"/>
+        <br/>
+        <label>State: </label>
+            <input th:field="*{deliveryState}" type="text"/> <br/>
+        <label>Zip code: </label>
+            <input th:field="*{deliveryZip}" type="text"/> <br/>
+    <h3>Here's how I'll pay...</h3>
+        <label>Credit Card #: </label>
+            <input th:field="*{ccNumber}" type="text"/>
+        <br/>
+        <label>Expiration Date: </label>
+            <input th:field="*{ccExpiration}" type="text"/>
+        <br/>
+            <label>CVV: </label>
+        <input th:field="*{ccCvv}" type="text"/>
+        <br/>
+        <input type="submit" value="Submit Order"/>
+    </form>
+</body>
+</html>
