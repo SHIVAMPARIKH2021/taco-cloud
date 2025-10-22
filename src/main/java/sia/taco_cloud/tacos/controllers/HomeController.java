@@ -1,14 +1,16 @@
 package sia.taco_cloud.tacos.controllers;
 
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Controller
-public class HomeController {
+@Configuration
+public class HomeController implements WebMvcConfigurer {
 
-    @GetMapping("/")
-    public String home() {
-        return "home";
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/").setViewName("home");
     }
+
 }
