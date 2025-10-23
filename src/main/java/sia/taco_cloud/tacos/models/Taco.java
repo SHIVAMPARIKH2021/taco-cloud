@@ -1,6 +1,5 @@
 package sia.taco_cloud.tacos.models;
 
-import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
