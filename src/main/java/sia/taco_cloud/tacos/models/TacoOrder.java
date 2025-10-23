@@ -2,15 +2,22 @@ package sia.taco_cloud.tacos.models;
 
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.hibernate.validator.constraints.CreditCardNumber;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
 public class TacoOrder {
+
+    @NotNull
+    private Long id;
+
+    private Date createdAt = new Date();
 
     @NotBlank(message = "Delivery name is required field")
     private String deliveryName;
