@@ -2,6 +2,7 @@ package sia.taco_cloud.tacos.controllers;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,8 +14,8 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import sia.taco_cloud.tacos.constants.Ingredient;
 import sia.taco_cloud.tacos.models.Taco;
 import sia.taco_cloud.tacos.models.TacoOrder;
+import sia.taco_cloud.tacos.repositories.implementations.IngredientRepositoryImplementation;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,24 +25,19 @@ import java.util.stream.Collectors;
 @SessionAttributes("tacoOrder")
 public class DesignTacoController {
 
+    private IngredientRepositoryImplementation ingredientRepositoryImplementation;
+
+    @Autowired
+    public DesignTacoController(IngredientRepositoryImplementation ingredientRepositoryImplementation) {
+        this.ingredientRepositoryImplementation = ingredientRepositoryImplementation;
+    }
+
     @ModelAttribute
     public void addIngredientsToModel(Model model) {
-        List<Ingredient> ingredients = Arrays.asList(
-                new Ingredient("FLTO", "Flour Tortilla", Ingredient.Type.WRAP),
-                new Ingredient("COTO", "Corn Tortilla", Ingredient.Type.WRAP),
-                new Ingredient("GRBF", "Ground Beef", Ingredient.Type.PROTEIN),
-                new Ingredient("CARN", "Carnitas", Ingredient.Type.PROTEIN),
-                new Ingredient("TMTO", "Diced Tomatoes", Ingredient.Type.VEGGIES),
-                new Ingredient("LETC", "Lettuce", Ingredient.Type.VEGGIES),
-                new Ingredient("CHED", "Cheddar", Ingredient.Type.CHEESE),
-                new Ingredient("JACK", "Monterrey Jack", Ingredient.Type.CHEESE),
-                new Ingredient("SLSA", "Salsa", Ingredient.Type.SAUCE),
-                new Ingredient("SRCR", "Sour Cream", Ingredient.Type.SAUCE)
-        );
-
+        Iterable<Ingredient> ingredients = ingredientRepositoryImplementation.findAll();
         Ingredient.Type[] types = Ingredient.Type.values();
         for(Ingredient.Type type :types) {
-            model.addAttribute(type.toString().toLowerCase(), filterByType(ingredients, type));
+            model.addAttribute(type.toString().toLowerCase(), filterByType((List<Ingredient>) ingredients, type));
         }
     }
 
