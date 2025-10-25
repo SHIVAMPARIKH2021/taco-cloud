@@ -25,7 +25,7 @@ create table if not exists taco_order (
  );
 
  create table if not exists ingredient_reference(
- ingredient varchar(4) not null references ingredients(id),
+ ingredient_id varchar(4) not null references ingredients(id),
  taco bigint not null,
  taco_key bigint not null
  );
