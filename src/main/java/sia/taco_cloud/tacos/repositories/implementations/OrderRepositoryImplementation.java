@@ -28,7 +28,7 @@ public class OrderRepositoryImplementation implements OrderRepository {
     public TacoOrder save(TacoOrder order) {
         // Implementation to save the TacoOrder to the database
         // This is a placeholder implementation
-        String sql = "INSERT INTO taco_order (name, street, city, state, zip, cc_number, cc_expiration, cc_cvv, placed_at) "
+        String sql = "INSERT INTO taco_order (delivery_name, delivery_street, delivery_city, delivery_state, delivery_zip, cc_number, cc_expiration, cc_cvv, placed_at) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatementCreatorFactory pscf = new PreparedStatementCreatorFactory(sql, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
                 Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,Types.VARCHAR, Types.TIMESTAMP);
@@ -63,7 +63,7 @@ public class OrderRepositoryImplementation implements OrderRepository {
         pscf.setReturnGeneratedKeys(true);
 
         PreparedStatementCreator psc = pscf.newPreparedStatementCreator(
-                Arrays.asList(orderId, orderKey, taco.getName(), new Date())
+                Arrays.asList(orderKey, orderId, taco.getName(), new Date())
         );
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();

@@ -51,6 +51,7 @@ public class DesignTacoController {
                               @ModelAttribute TacoOrder tacoOrder) {
 
         if(errors.hasErrors()) {
+            log.error("Errors found in taco design: {}", errors);
             return "design";
         }
 

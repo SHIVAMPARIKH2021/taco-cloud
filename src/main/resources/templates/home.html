@@ -6,8 +6,14 @@
     </head>
 
     <body>
-        <h1>Welcome to...</h1>
-            <img th:src="@{/images/taco-cloud-image.png}"/>
+       <h1>Welcome to...</h1>
+         <img th:src="@{/images/taco-cloud-image.png}"/>
+
+       <form method="GET" th:action="@{/design}">
+        <div>
+            <button type="submit">Design your taco!</button>
+        </div>
+       </form>
     </body>
 
 </html>
