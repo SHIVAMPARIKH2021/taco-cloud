@@ -2,6 +2,7 @@ package sia.taco_cloud.tacos.controllers;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +19,7 @@ import sia.taco_cloud.tacos.repositories.OrderRepository;
 @Controller
 public class OrderController {
 
-    OrderRepository orderRepository;
+    private OrderRepository orderRepository;
 
     public OrderController(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
