@@ -9,6 +9,7 @@ import sia.taco_cloud.tacos.constants.Ingredient;
 import sia.taco_cloud.tacos.models.IngredientReference;
 import sia.taco_cloud.tacos.models.Taco;
 import sia.taco_cloud.tacos.models.TacoOrder;
+import sia.taco_cloud.tacos.repositories.OrderRepository;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -16,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 @Repository
-public class OrderRepositoryImplementation {
+public class OrderRepositoryImplementation implements OrderRepository {
 
     private JdbcOperations jdbcOperations;
 
