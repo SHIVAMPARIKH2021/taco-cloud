@@ -14,7 +14,6 @@ import java.util.List;
 @Data
 public class TacoOrder {
 
-    @NotNull
     private Long id;
 
     private Date createdAt = new Date();
