@@ -24,31 +24,58 @@ public class OrderRepositoryImplementation implements OrderRepository {
     @Autowired
     private String insertTaco;
 
+    @Autowired
+    private String getTacoOrder;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
     public OrderRepositoryImplementation(JdbcTemplate jdbcTemplate,
                                          String insertTacoOrder,
                                          String insertIngredientReference,
-                                         String insertTaco) {
+                                         String insertTaco,
+                                         String getTacoOrder) {
         this.jdbcTemplate = jdbcTemplate;
         this.insertTacoOrder = insertTacoOrder;
         this.insertIngredientReference = insertIngredientReference;
         this.insertTaco = insertTaco;
+        this.getTacoOrder = getTacoOrder;
     }
 
     public TacoOrder save(TacoOrder order) {
-        jdbcTemplate.update(insertTacoOrder);
-        List<Taco> tacos = order.getTacos();
-        for(Taco taco : tacos) {
-            saveTaco(taco);
+        long tacoId = 0;
+        int rowCount = jdbcTemplate.update(insertTacoOrder,
+                order.getDeliveryName(),
+                order.getDeliveryStreet(),
+                order.getDeliveryCity(),
+                order.getDeliveryState(),
+                order.getDeliveryZip(),
+                order.getCcNumber(),
+                order.getCcExpiration(),
+                order.getCcCvv(),
+                order.getPlacedAt());
+        if (rowCount == 1) {
+            long tacoOrderId = jdbcTemplate.queryForObject(getTacoOrder, Long.class);
+            order.setId(tacoOrderId);
+            List<Taco> tacos = order.getTacos();
+            for(Taco taco : tacos) {
+                taco.setTacoOrderId(tacoOrderId);
+                tacoId++;
+                saveTaco(taco,tacoOrderId, tacoId);
+            }
+            return order;
         }
-        return order;
+        else {
+            throw new RuntimeException("Failed to save order");
+        }
     }
 
-    private void saveTaco(Taco taco) {
-        jdbcTemplate.update(insertTaco);
-        saveIngredientReference(taco.getId(), taco.getIngredients());
+    private void saveTaco(Taco taco, long tacoOrderId, long tacoId) {
+        jdbcTemplate.update(insertTaco, taco.getName(), tacoOrderId, tacoId);
+        saveIngredientReference(taco.getIngredients(), taco.getId());
     }
 
-    private void saveIngredientReference(long tacoId, List<Ingredient> ingredients) {
+    private void saveIngredientReference(List<Ingredient> ingredients, long tacoId) {
         for(Ingredient ingredient : ingredients) {
             jdbcTemplate.update(insertIngredientReference, ingredient.getId(), tacoId);
         }

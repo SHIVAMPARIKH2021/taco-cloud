@@ -2,7 +2,6 @@ package sia.taco_cloud.tacos.models;
 
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.hibernate.validator.constraints.CreditCardNumber;
@@ -42,7 +41,7 @@ public class TacoOrder {
     @Digits(integer = 3, fraction = 0, message = "Invalid cvv")
     private String ccCvv;
 
-    private Date placedAt;
+    private Date placedAt = new Date();
 
     private List<Taco> tacos = new ArrayList<>();
 

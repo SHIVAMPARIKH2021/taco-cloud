@@ -13,6 +13,9 @@ public class Taco {
 
     private Long id;
 
+    @NotNull
+    private Long tacoOrderId;
+
     private Date createdAt = new Date();
 
     @NotNull
