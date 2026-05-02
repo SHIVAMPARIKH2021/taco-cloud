@@ -26,12 +26,16 @@
 
     <bean id="insertIngredientReferenceTest" class="java.lang.String">
         <constructor-arg value="INSERT INTO ingredient_reference (
-        ingredient_id, taco, taco_key)
-        VALUES (?, ?, ?)" />
+        ingredient_id, taco_id)
+        VALUES (?, ?)" />
     </bean>
 
     <bean id="insertTacoTest" class="java.lang.String">
-        <constructor-arg value="NSERT INTO taco (taco_order, taco_order_id, name, created_at)
-        VALUES (?, ?, ?, ?)" />
+        <constructor-arg value="INSERT INTO taco (name, taco_order_id, created_at)
+        VALUES (?, ?, ?)" />
+    </bean>
+
+    <bean id="getTacoOrderTest" class="java.lang.String">
+        <constructor-arg value="SELECT id FROM taco_order order by id desc limit 1" />
     </bean>
 </beans>
