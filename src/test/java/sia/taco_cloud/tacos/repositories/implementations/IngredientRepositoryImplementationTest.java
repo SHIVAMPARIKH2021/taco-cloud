@@ -2,7 +2,7 @@ package sia.taco_cloud.tacos.repositories.implementations;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import sia.taco_cloud.tacos.constants.Ingredient;
@@ -56,13 +56,13 @@ class IngredientRepositoryImplementationTest {
     void findById_returnsIngredientWhenPresent() {
         Ingredient wrap = new Ingredient("FLTO", "Flour Tortilla", Ingredient.Type.WRAP);
 
-        when(jdbcTemplate.queryForList(eq(ingredientFindById), eq(Ingredient.class)))
-                .thenReturn(List.of(wrap));
+        when(jdbcTemplate.queryForObject(eq(ingredientFindById), any(RowMapper.class), eq("FLTO")))
+                .thenReturn(wrap);
 
         Optional<Ingredient> found = repository.findById("FLTO");
 
         assertThat(found).isPresent();
-        assertThat(found.get()).isEqualTo(wrap);
+        assertThat(found).isEqualTo(Optional.of(wrap));
     }
 
     @Test

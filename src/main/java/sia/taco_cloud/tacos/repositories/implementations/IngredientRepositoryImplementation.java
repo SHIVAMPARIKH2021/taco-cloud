@@ -54,11 +54,17 @@ public class IngredientRepositoryImplementation implements IngredientRepository 
      */
     @Override
     public Optional<Ingredient> findById(String id) {
-        List<Ingredient> ingredients;
-        ingredients = jdbcTemplate.queryForList(ingredientFindById, Ingredient.class);
-        return ingredients.isEmpty()
-                ? Optional.empty()
-                : Optional.ofNullable(ingredients.getFirst());
+        try {
+            Ingredient ingredient = jdbcTemplate.queryForObject(
+                    ingredientFindById,
+                    this::mapRow,
+                    id
+            );
+            return Optional.ofNullable(ingredient);
+        }
+        catch(org.springframework.dao.EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     /**
