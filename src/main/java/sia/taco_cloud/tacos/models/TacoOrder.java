@@ -5,17 +5,18 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.hibernate.validator.constraints.CreditCardNumber;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.MappedCollection;
+import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Data
+@Table("taco_order")
 public class TacoOrder {
 
+    @Id
     private Long id;
-
-    private Date createdAt = new Date();
 
     @NotBlank(message = "Delivery name is required field")
     private String deliveryName;
@@ -43,7 +44,8 @@ public class TacoOrder {
 
     private Date placedAt = new Date();
 
-    private List<Taco> tacos = new ArrayList<>();
+    @MappedCollection(idColumn = "taco_order_id")
+    private Set<Taco> tacos = new HashSet<>();
 
     public void addTaco(Taco taco) {
         this.tacos.add(taco);

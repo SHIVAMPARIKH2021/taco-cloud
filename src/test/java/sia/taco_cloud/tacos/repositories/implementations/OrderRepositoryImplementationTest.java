@@ -12,6 +12,7 @@ import sia.taco_cloud.tacos.config.QueryConfigTest;
 import sia.taco_cloud.tacos.constants.Ingredient;
 import sia.taco_cloud.tacos.models.Taco;
 import sia.taco_cloud.tacos.models.TacoOrder;
+import sia.taco_cloud.tacos.repositories.OrderRepository;
 
 import java.util.Arrays;
 
@@ -40,6 +41,9 @@ public class OrderRepositoryImplementationTest {
     @Qualifier("getTacoOrderTest") // Ensure this exists in your XML
     private String getTacoOrderTest;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
     @BeforeEach
     void setUp() {
         jdbcTemplate = mock(JdbcTemplate.class);
@@ -48,12 +52,12 @@ public class OrderRepositoryImplementationTest {
                 insertTacoOrderTest,
                 insertIngredientReferenceTest,
                 insertTacoTest,
-                getTacoOrderTest
+                orderRepository // This should be a mock or a real instance depending on your test design
         );
     }
 
     @Test
-    void testSaveOrder_ShouldExecuteUpdateQueries() {
+    void testSaveTacoOrderOrder_ShouldExecuteUpdateQueries() {
         // 1. Arrange
         TacoOrder order = new TacoOrder();
         order.setDeliveryName("John Doe");
@@ -81,7 +85,7 @@ public class OrderRepositoryImplementationTest {
                 .thenReturn(100L); // Mocking that the DB generated ID 100
 
         // 2. Act
-        repository.save(order);
+        repository.saveTacoOrder(order);
 
         // 3. Assert
 
