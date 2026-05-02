@@ -1,5 +1,6 @@
 package sia.taco_cloud.tacos.repositories.implementations;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import sia.taco_cloud.tacos.constants.Ingredient;
@@ -7,6 +8,7 @@ import sia.taco_cloud.tacos.repositories.IngredientRepository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,8 +17,23 @@ public class IngredientRepositoryImplementation implements IngredientRepository 
 
     private final JdbcTemplate jdbcTemplate;
 
-    public IngredientRepositoryImplementation(JdbcTemplate jdbcTemplate) {
+    @Autowired
+    private String ingredientFindAll;
+
+    @Autowired
+    private String ingredientFindById;
+
+    @Autowired
+    private String ingredientInsert;
+
+    public IngredientRepositoryImplementation(JdbcTemplate jdbcTemplate,
+                                              String ingredientFindAll,
+                                              String ingredientFindById,
+                                              String ingredientInsert) {
         this.jdbcTemplate = jdbcTemplate;
+        this.ingredientFindAll = ingredientFindAll;
+        this.ingredientFindById = ingredientFindById;
+        this.ingredientInsert = ingredientInsert;
     }
 
     /**
@@ -25,36 +42,33 @@ public class IngredientRepositoryImplementation implements IngredientRepository 
      */
     @Override
     public Iterable<Ingredient> findAll() {
-        return jdbcTemplate.query("select id, name, type from ingredients;",
+        return jdbcTemplate.query(ingredientFindAll,
                 this::mapRow
         );
     }
 
     /**
      * Find the Ingredient by id
-     * @param id an unique id of an Ingredient
+     * @param id a unique id of an Ingredient
      * @return Ingredient object
      */
     @Override
     public Optional<Ingredient> findById(String id) {
         List<Ingredient> ingredients;
-        ingredients = jdbcTemplate.query("select id, name, type from ingredients where id = ?;",
-                new Object[]{id},
-                this::mapRow
-        );
+        ingredients = jdbcTemplate.queryForList(ingredientFindById, Ingredient.class);
         return ingredients.isEmpty()
                 ? Optional.empty()
-                : Optional.ofNullable(ingredients.get(0));
+                : Optional.ofNullable(ingredients.getFirst());
     }
 
     /**
-     * Save the Ingredient in the data base
+     * Save the Ingredient in the database
      * @param ingredient an Ingredient object
      * @return an Ingredient object to be saved
      */
     @Override
     public Ingredient save(Ingredient ingredient) {
-        jdbcTemplate.update("insert into ingredients (id, name, type) values (?, ?, ?)",
+        jdbcTemplate.update(ingredientInsert,
                 ingredient.getId(), ingredient.getName(), ingredient.getType().name());
         return ingredient;
     }
