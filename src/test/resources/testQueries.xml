@@ -5,32 +5,32 @@
          http://www.springframework.org/schema/beans
          https://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="ingredientFindAll" class="java.lang.String">
+    <bean id="ingredientFindAllTest" class="java.lang.String">
         <constructor-arg value="select id, name, type from ingredients" />
     </bean>
 
-    <bean id="ingredientFindById" class="java.lang.String">
+    <bean id="ingredientFindByIdTest" class="java.lang.String">
         <constructor-arg value="select id, name, type from ingredients where id = ?" />
     </bean>
 
-    <bean id="ingredientInsert" class="java.lang.String">
+    <bean id="ingredientInsertTest" class="java.lang.String">
         <constructor-arg value="insert into ingredients (
         id, name, type) values (?, ?, ?)" />
     </bean>
 
-    <bean id="insertTacoOrder" class="java.lang.String">
+    <bean id="insertTacoOrderTest" class="java.lang.String">
         <constructor-arg value="INSERT INTO taco_order (
         delivery_name, delivery_street, delivery_city, delivery_state, delivery_zip, cc_number, cc_expiration, cc_cvv, placed_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"/>
     </bean>
 
-    <bean id="insertIngredientReference" class="java.lang.String">
+    <bean id="insertIngredientReferenceTest" class="java.lang.String">
         <constructor-arg value="INSERT INTO ingredient_reference (
         ingredient_id, taco, taco_key)
         VALUES (?, ?, ?)" />
     </bean>
 
-    <bean id="insertTaco" class="java.lang.String">
+    <bean id="insertTacoTest" class="java.lang.String">
         <constructor-arg value="NSERT INTO taco (taco_order, taco_order_id, name, created_at)
         VALUES (?, ?, ?, ?)" />
     </bean>

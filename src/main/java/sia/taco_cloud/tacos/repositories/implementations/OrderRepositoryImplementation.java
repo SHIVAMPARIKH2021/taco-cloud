@@ -1,87 +1,56 @@
 package sia.taco_cloud.tacos.repositories.implementations;
 
-import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import sia.taco_cloud.tacos.constants.Ingredient;
-import sia.taco_cloud.tacos.models.IngredientReference;
 import sia.taco_cloud.tacos.models.Taco;
 import sia.taco_cloud.tacos.models.TacoOrder;
 import sia.taco_cloud.tacos.repositories.OrderRepository;
 
-import java.sql.Types;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 @Repository
 public class OrderRepositoryImplementation implements OrderRepository {
 
-    private JdbcOperations jdbcOperations;
+    private JdbcTemplate jdbcTemplate;
 
-    public OrderRepositoryImplementation(JdbcOperations jdbcOperations) {
-        this.jdbcOperations = jdbcOperations;
+    @Autowired
+    private String insertTacoOrder;
+
+    @Autowired
+    private String insertIngredientReference;
+
+    @Autowired
+    private String insertTaco;
+
+    public OrderRepositoryImplementation(JdbcTemplate jdbcTemplate,
+                                         String insertTacoOrder,
+                                         String insertIngredientReference,
+                                         String insertTaco) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.insertTacoOrder = insertTacoOrder;
+        this.insertIngredientReference = insertIngredientReference;
+        this.insertTaco = insertTaco;
     }
 
     public TacoOrder save(TacoOrder order) {
-        // Implementation to save the TacoOrder to the database
-        // This is a placeholder implementation
-        String sql = "INSERT INTO taco_order (delivery_name, delivery_street, delivery_city, delivery_state, delivery_zip, cc_number, cc_expiration, cc_cvv, placed_at) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatementCreatorFactory pscf = new PreparedStatementCreatorFactory(sql, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
-                Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,Types.VARCHAR, Types.TIMESTAMP);
-
-        pscf.setReturnGeneratedKeys(true);
-        order.setPlacedAt(new Date());
-
-        PreparedStatementCreator psc = pscf.newPreparedStatementCreator(Arrays.asList(order.getDeliveryName(), order.getDeliveryStreet(),
-                order.getDeliveryCity(), order.getDeliveryState(), order.getDeliveryZip(),
-                order.getCcNumber(), order.getCcExpiration(), order.getCcCvv(), order.getPlacedAt()));
-
-        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcOperations.update(psc, keyHolder);
-
-        long orderId = keyHolder.getKey().longValue();
-        order.setId(orderId);
-
+        jdbcTemplate.update(insertTacoOrder);
         List<Taco> tacos = order.getTacos();
-        int i = 0;
         for(Taco taco : tacos) {
-            saveTaco(taco, orderId, i++);
+            saveTaco(taco);
         }
         return order;
     }
 
-    private long saveTaco(Taco taco, long orderId, int orderKey) {
-        String sql = "INSERT INTO taco (taco_order, taco_order_id, name, created_at)"
-                 + "VALUES (?, ?, ?, ?)";
-
-        PreparedStatementCreatorFactory pscf = new PreparedStatementCreatorFactory(sql,
-                Types.BIGINT, Types.BIGINT, Types.VARCHAR, Types.TIMESTAMP);
-        pscf.setReturnGeneratedKeys(true);
-
-        PreparedStatementCreator psc = pscf.newPreparedStatementCreator(
-                Arrays.asList(orderKey, orderId, taco.getName(), new Date())
-        );
-
-        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcOperations.update(psc, keyHolder);
-
-        long tacoId = keyHolder.getKey().longValue();
-        taco.setId(tacoId);
-
-        saveIngredientReference(tacoId, taco.getIngredients());
-        return tacoId;
+    private void saveTaco(Taco taco) {
+        jdbcTemplate.update(insertTaco);
+        saveIngredientReference(taco.getId(), taco.getIngredients());
     }
 
     private void saveIngredientReference(long tacoId, List<Ingredient> ingredients) {
-        int key = 0;
-        String sql = "INSERT INTO ingredient_reference (ingredient_id, taco, taco_key) VALUES (?, ?, ?)";
-
         for(Ingredient ingredient : ingredients) {
-            jdbcOperations.update(sql, ingredient.getId(), tacoId, key++);
+            jdbcTemplate.update(insertIngredientReference, ingredient.getId(), tacoId);
         }
 
     }
