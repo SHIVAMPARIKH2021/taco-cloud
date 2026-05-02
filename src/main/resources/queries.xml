@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+         http://www.springframework.org/schema/beans
+         https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="ingredientFindAll" class="java.lang.String">
+        <constructor-arg value="select id, name, type from ingredients" />
+    </bean>
+
+    <bean id="ingredientFindById" class="java.lang.String">
+        <constructor-arg value="select id, name, type from ingredients where id = ?" />
+    </bean>
+
+    <bean id="ingredientInsert" class="java.lang.String">
+        <constructor-arg value="insert into ingredients (id, name, type) values (?, ?, ?)" />
+    </bean>
+
+</beans>
