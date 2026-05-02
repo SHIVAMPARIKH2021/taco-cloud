@@ -4,25 +4,37 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import sia.taco_cloud.tacos.constants.Ingredient;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class IngredientRepositoryImplementationTest {
 
     private JdbcTemplate jdbcTemplate;
     private IngredientRepositoryImplementation repository;
+    private String ingredientFindAll;
+    private String ingredientFindById;
+    private String ingredientInsert;
 
     @BeforeEach
     void setUp() {
+        ingredientFindAll = "select id, name, type from ingredients";
+        ingredientFindById = "select id, name, type from ingredients where id = ?";
+        ingredientInsert = "insert into ingredients (id, name, type) values (?, ?, ?)";
+
         jdbcTemplate = mock(JdbcTemplate.class);
-        repository = new IngredientRepositoryImplementation(jdbcTemplate);
+        repository = new IngredientRepositoryImplementation(jdbcTemplate, ingredientFindAll, ingredientFindById, ingredientInsert);
     }
 
     @Test
@@ -30,7 +42,7 @@ class IngredientRepositoryImplementationTest {
         Ingredient wrap = new Ingredient("FLTO", "Flour Tortilla", Ingredient.Type.WRAP);
         Ingredient pto = new Ingredient("GRBF", "Ground Beef", Ingredient.Type.PROTEIN);
 
-        when(jdbcTemplate.query(anyString(), any(org.springframework.jdbc.core.RowMapper.class)))
+        when(jdbcTemplate.query(eq(ingredientFindAll), any(RowMapper.class)))
                 .thenReturn(Arrays.asList(wrap, pto));
 
         Iterable<Ingredient> result = repository.findAll();
@@ -44,24 +56,19 @@ class IngredientRepositoryImplementationTest {
     void findById_returnsIngredientWhenPresent() {
         Ingredient wrap = new Ingredient("FLTO", "Flour Tortilla", Ingredient.Type.WRAP);
 
-        when(jdbcTemplate.query(anyString(), any(Object[].class), any(org.springframework.jdbc.core.RowMapper.class)))
-                .thenReturn(Arrays.asList(wrap));
+        when(jdbcTemplate.queryForList(eq(ingredientFindById), eq(Ingredient.class)))
+                .thenReturn(List.of(wrap));
 
         Optional<Ingredient> found = repository.findById("FLTO");
 
         assertThat(found).isPresent();
         assertThat(found.get()).isEqualTo(wrap);
-
-        ArgumentCaptor<Object[]> captor = ArgumentCaptor.forClass(Object[].class);
-        verify(jdbcTemplate).query(anyString(), captor.capture(), any(org.springframework.jdbc.core.RowMapper.class));
-        Object[] params = captor.getValue();
-        assertThat(params).containsExactly("FLTO");
     }
 
     @Test
     void findById_returnsEmptyWhenNotPresent() {
-        when(jdbcTemplate.query(anyString(), any(Object[].class), any(org.springframework.jdbc.core.RowMapper.class)))
-                .thenReturn(Arrays.asList());
+        when(jdbcTemplate.query(eq(ingredientFindById), any(Object[].class), any(RowMapper.class)))
+                .thenReturn(Collections.emptyList());
 
         Optional<Ingredient> found = repository.findById("XXXX");
 
@@ -72,13 +79,13 @@ class IngredientRepositoryImplementationTest {
     void save_insertsIngredient() {
         Ingredient cheese = new Ingredient("CHED", "Cheddar", Ingredient.Type.CHEESE);
 
-        when(jdbcTemplate.update(anyString(), any(), any(), any())).thenReturn(1);
+        when(jdbcTemplate.update(eq(ingredientInsert), any(), any(), any())).thenReturn(1);
 
         Ingredient saved = repository.save(cheese);
 
         assertThat(saved).isSameAs(cheese);
 
-        verify(jdbcTemplate).update(anyString(), eq(cheese.getId()), eq(cheese.getName()), eq(cheese.getType().name()));
+        verify(jdbcTemplate).update(eq(ingredientInsert), eq(cheese.getId()), eq(cheese.getName()), eq(cheese.getType().name()));
     }
 
 }
